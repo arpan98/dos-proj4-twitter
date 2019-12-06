@@ -3,8 +3,16 @@
 </section>
 
 <div>
-	<h2>Login</h2>
-	<input type="text" id="username"></input>
-	<button id="submit">Submit</button>
-	<p id="login-result"></p>
+  <div class="horizontal-div">
+    <h2>Sign Up</h2>
+    <label>Username</label><input type="text" id="username1"></input>
+    <button id="signUp">Sign Up</button>
+    <p id="register-result"></p>
+  </div>
+  <div class="horizontal-div">
+    <h2>Login</h2>
+    <label>Username</label><input type="text" id="username2"></input>
+    <button id="login">Login</button>
+    <p id="login-result"></p>
+  </div>
 </div>

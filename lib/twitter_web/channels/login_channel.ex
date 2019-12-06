@@ -5,12 +5,19 @@ defmodule TwitterWeb.LoginChannel do
     {:ok, socket}
   end
 
-  def handle_in("register", %{"body" => body}, socket) do
-    case GenServer.call(TwitterServer, {:register_user, body, self()}, :infinity) do
+  def handle_in("register", %{"username" => username}, socket) do
+    case GenServer.call(TwitterServer, {:register_user, username, self()}, :infinity) do
       {:ok, msg} -> push(socket, "register_result", %{result: msg})
       {:error, reason} -> push(socket, "register_result", %{result: reason})  
     end
     {:noreply, socket}
   end
 
+  def handle_in("login", %{"username" => username}, socket) do
+    case GenServer.call(TwitterServer, {:login_user, username}, :infinity) do
+      {:ok, msg} -> push(socket, "login_result", %{result: msg})
+      {:error, reason} -> push(socket, "login_result", %{result: reason})  
+    end
+    {:noreply, socket}
+  end
 end

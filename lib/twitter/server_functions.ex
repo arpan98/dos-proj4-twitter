@@ -19,7 +19,8 @@ defmodule ServerFunctions do
       [user | _] -> 
         {_, userPid, _} = user
         :ets.insert(:registered_users, {userId, userPid, true})
-      [] -> :nothing
+        {:ok, "success"}
+      [] -> {:error, "user not found"}
     end
   end
 

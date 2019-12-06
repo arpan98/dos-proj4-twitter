@@ -14,24 +14,48 @@ loginSocket.connect()
 
 // Now that you are connected, you can join channels with a topic:
 let channel = loginSocket.channel("login", {})
-let username = document.querySelector("#username")
-let submitButton = document.querySelector('#submit')
+let username1 = document.querySelector("#username1")
+let username2 = document.querySelector("#username2")
+let signUpButton = document.querySelector('#signUp')
+let loginButton = document.querySelector('#login')
+let register_result = document.querySelector("#register-result")
 let login_result = document.querySelector("#login-result")
 
 function register_user() {
-  channel.push("register", {body: username.value})
+  channel.push("register", {username: username1.value})
 }
 
-username.addEventListener("keypress", event => {
+function login_user() {
+  channel.push("login", {username: username2.value})
+}
+
+username1.addEventListener("keypress", event => {
   if(event.keyCode === 13){
     register_user()
   }
 })
 
-submitButton.addEventListener("click", register_user)
+username2.addEventListener("keypress", event => {
+  if(event.keyCode === 13){
+    login_user()
+  }
+})
+
+signUpButton.addEventListener("click", register_user)
+loginButton.addEventListener("click", login_user)
 
 channel.on("register_result", payload => {
+  register_result.innerText = `${payload.result}`
+  if (payload.result == 'success') {
+    // channel.
+  }
+})
+
+channel.on("login_result", payload => {
   login_result.innerText = `${payload.result}`
+  if (payload.result == 'success') {
+    // channel.
+  }
 })
 
 channel.join()

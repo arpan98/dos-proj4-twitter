@@ -29,8 +29,8 @@ defmodule Twitter.Server do
   end
 
   def handle_call({:login_user, userId}, _, state) do
-    ServerFunctions.login(userId)
-    {:reply, state, state}
+    ret = ServerFunctions.login(userId)
+    {:reply, ret, state}
   end
 
   def handle_call({:logout_user, userId}, _, state) do
