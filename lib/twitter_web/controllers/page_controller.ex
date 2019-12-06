@@ -2,6 +2,6 @@ defmodule TwitterWeb.PageController do
   use TwitterWeb, :controller
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    redirect(conn, to: "/login")
   end
 end
