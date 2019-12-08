@@ -20,6 +20,8 @@ defmodule TwitterWeb.Router do
     get "/login", LoginController, :index
     post "/login/existing", LoginController, :existing
     post "/login/new", LoginController, :new
+    post "/login/logout", LoginController, :logout
+    post "/login/delete", LoginController, :delete
     get "/home", HomeController, :index
   end
 

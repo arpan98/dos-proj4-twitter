@@ -10,8 +10,8 @@ defmodule ServerFunctions do
   end
 
   def delete_user(userId) do
-    {_, registeredPid, _} = :ets.lookup(:registered_users, userId) |> Enum.at(0)
     :ets.delete(:registered_users, userId)
+    {:ok, "success"}
   end
 
   def login(userId) do
@@ -29,7 +29,8 @@ defmodule ServerFunctions do
       [user | _] -> 
         {_, userPid, _} = user
         :ets.insert(:registered_users, {userId, userPid, false})
-      [] -> :nothing
+        {:ok, "success"}
+      [] -> {:error, "user not found"}
     end
   end
 

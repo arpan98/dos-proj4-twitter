@@ -1,1 +1,5 @@
-<h1>Homepage</h1>
+<h1><%= assigns[:username] %>'s Homepage</h1>
+<ul>
+  <li><%= link "Logout", to: Routes.login_path(@conn, :logout), method: :post %></li>
+  <li><%= link "Delete account", to: Routes.login_path(@conn, :delete), method: :post%></li>
+</ul>

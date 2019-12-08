@@ -24,8 +24,8 @@ defmodule Twitter.Server do
 
   # Deregister user
   def handle_call({:delete_user, userId}, _from, state) do
-    ServerFunctions.delete_user(userId)
-    {:reply, state, state}
+    ret = ServerFunctions.delete_user(userId)
+    {:reply, ret, state}
   end
 
   def handle_call({:login_user, userId}, _, state) do
@@ -34,8 +34,8 @@ defmodule Twitter.Server do
   end
 
   def handle_call({:logout_user, userId}, _, state) do
-    ServerFunctions.logout(userId)
-    {:reply, state, state}
+    ret = ServerFunctions.logout(userId)
+    {:reply, ret, state}
   end
 
   def handle_cast({:tweet_post, userId, tweet}, state) do
