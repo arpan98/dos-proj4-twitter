@@ -4,15 +4,17 @@
 
 <div>
   <div class="horizontal-div">
+    <%= form_for @conn, Routes.login_path(@conn, :new), [as: :session], fn f -> %>
     <h2>Sign Up</h2>
-    <label>Username</label><input type="text" id="username1"></input>
-    <button id="signUp">Sign Up</button>
-    <p id="register-result"></p>
+    <%= text_input f, :username_new, placeholder: "Username", required: true, autofocus: true %>
+    <%= submit "Sign Up" %>
+    <% end %>
   </div>
   <div class="horizontal-div">
+    <%= form_for @conn, Routes.login_path(@conn, :existing), [as: :session], fn f -> %>
     <h2>Login</h2>
-    <label>Username</label><input type="text" id="username2"></input>
-    <button id="login">Login</button>
-    <p id="login-result"></p>
+    <%= text_input f, :username_existing, placeholder: "Username", required: true, autofocus: true %>
+    <%= submit "Sign In" %>
+    <% end %>
   </div>
 </div>

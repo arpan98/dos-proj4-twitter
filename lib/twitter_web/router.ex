@@ -18,6 +18,9 @@ defmodule TwitterWeb.Router do
 
     get "/", PageController, :index
     get "/login", LoginController, :index
+    post "/login/existing", LoginController, :existing
+    post "/login/new", LoginController, :new
+    get "/home", HomeController, :index
   end
 
   # Other scopes may use custom stacks.
