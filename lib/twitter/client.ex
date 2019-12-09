@@ -6,6 +6,7 @@ defmodule Twitter.Client do
   end
 
   def init([userId]) do
+    Process.send_after(self(), :tick, getRandomInterval())
     {:ok, %{userId: userId}}
   end
 
@@ -93,6 +94,33 @@ defmodule Twitter.Client do
   def handle_cast({:receive_retweet, _userId, _ownerId, _tweet}, state) do
     # IO.puts("#{state.userId} received retweet. #{userId} retweeted #{ownerId} - #{tweet}")
     {:noreply, state}
+  end
+
+  def handle_info(:tick, state) do
+    tweet(state)
+    {:noreply, state}
+  end
+
+  defp tweet(state) do
+    t = generateRandomTweet()
+    GenServer.cast(TwitterServer, {:tweet_post, state.userId, t})
+    Process.send_after(self(), :tick, getRandomInterval())
+  end
+
+  defp generateRandomTweet() do
+    hashtags = getRandomHashtags()
+    # IO.inspect(["hashtags", hashtags])
+    tweet = Enum.reduce(hashtags, "Hello this is a random tweet by a simulated client", fn ht, acc -> "#{acc} #{ht}" end)
+  end
+
+  defp getRandomHashtags() do
+    hashtags = ["#uf", "#gogators", "#twitter", "#twittersim", "#phoenix", "#elixir"]
+    num_hashtags = Enum.random(0..2)
+    Enum.take_random(hashtags, num_hashtags)
+  end
+
+  defp getRandomInterval() do
+    (:rand.uniform(10) * 500) + 5000
   end
 
   defp probability_roll(p) do
