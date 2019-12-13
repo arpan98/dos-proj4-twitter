@@ -5,7 +5,7 @@ defmodule TwitterWeb.TweetChannel do
     {:ok, socket}
   end
 
-  intercept ["newtweet"]
+  intercept ["gottweet", "gotretweet"]
 
   def handle_in("subTo", payload, socket) do
     GenServer.cast(TwitterServer, {:subscribe, socket.assigns.username, payload["otheruser"]})
@@ -13,12 +13,33 @@ defmodule TwitterWeb.TweetChannel do
     {:noreply, socket |> assign(:subbedTo, subbedTo)}
   end
 
-  def handle_out("newtweet", payload, socket) do
-    case Enum.member?(socket.assigns.subbedTo, payload["username"]) do
-      true -> 
-        push(socket, "newtweet", payload)
+  def handle_in("tweet", payload, socket) do
+    GenServer.cast(TwitterServer, {:tweet_post, socket.assigns.username, payload["tweet"]})
+    {:noreply, socket}
+  end
+
+  def handle_in("retweet", payload, socket) do
+    GenServer.cast(TwitterServer, {:retweet_post, socket.assigns.username, payload["owner"], payload["tweet"]})
+    {:noreply, socket}
+  end
+
+  def handle_out("gottweet", payload, socket) do
+    case {Enum.member?(socket.assigns.subbedTo, payload["username"]), socket.assigns.username == payload["username"]} do
+      {true, false} -> 
+        push(socket, "gottweet", payload)
+        IO.inspect(payload)
         {:noreply, socket}
-      false -> {:noreply, socket}
+      {_, true} ->
+        push(socket, "selftweet", payload)
+        IO.inspect(payload)
+        {:noreply, socket}
+      _ -> {:noreply, socket}
     end
+  end
+
+  def handle_out("gotretweet", payload, socket) do
+    push(socket, "gotretweet", payload)
+    IO.inspect(payload)
+    {:noreply, socket}
   end
 end

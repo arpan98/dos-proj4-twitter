@@ -18,18 +18,52 @@ let channel = tweetSocket.channel("tweets", {})
 
 if(window.username) {
   let tweetList = document.querySelector("#tweetList")
+  let tweetInput = document.querySelector("#tweetInput")
   let subToInput = document.querySelector("#subToInput")
   let subButton = document.querySelector("#subButton")
+
+  function addTweet(payload, retweet=false, selftweet = false) {
+    console.log([retweet, selftweet])
+    var li = document.createElement('li')
+    var p = document.createElement('p')
+    p.innerHTML = "<b>" + payload.username + "</b>"
+    if(retweet) {
+      p.innerHTML += "<i> retweeted " + payload.owner + "</i>"
+    }
+    p.innerHTML += "<br/>" + payload.tweet
+    li.appendChild(p)
+    if(!selftweet) {
+      var rtbutton = document.createElement('input')
+      rtbutton.type = "submit"
+      rtbutton.value = "Retweet"
+      rtbutton.onclick = function() {
+        channel.push("retweet", {owner: payload.username, tweet: payload.tweet})
+      }
+      li.appendChild(rtbutton)
+    }
+    tweetList.insertBefore(li, tweetList.firstChild)
+  }
+
+  tweetButton.addEventListener("click", event => {
+    channel.push("tweet", {tweet: tweetInput.value})
+    tweetInput.value = ""
+  })
 
   subButton.addEventListener("click", event => {
     channel.push("subTo", {otheruser: subToInput.value})
     subToInput.value = ""
   })
 
-  channel.on("newtweet", payload => {
-    var li = document.createElement('li')
-    li.innerHTML = "<b>" + payload.username + "</b>" + "<br/>" + payload.tweet
-    tweetList.insertBefore(li, tweetList.firstChild)
+  channel.on("gottweet", payload => {
+    addTweet(payload)
+  })
+
+  channel.on("gotretweet", payload => {
+    addTweet(payload, true, true)
+  })
+
+  channel.on("selftweet", payload => {
+    addTweet(payload, false, true)
   })
 }
 

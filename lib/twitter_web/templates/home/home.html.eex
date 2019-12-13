@@ -1,17 +1,25 @@
 <script type="text/javascript">
   window.username = "<%= assigns[:username] %>";
 </script>
+
 <h1><%= assigns[:username] %>'s Homepage</h1>
 
+<input type="text" id="tweetInput"></input>
+<button id="tweetButton">Tweet</button>
+
 <ul id="tweetList" class="tweet-list">
-  <li></li>
 </ul>
 
-<input type="text" id="subToInput"></input>
-<button id="subButton">Subscribe</button>
+<div>
+  <input type="text" id="subToInput"></input>
+  <button id="subButton">Subscribe</button>
+</div>
 
-<ul>
-  <li><%= link "Logout", to: Routes.login_path(@conn, :logout), method: :post %></li>
-  <li><%= link "Delete account", to: Routes.login_path(@conn, :delete), method: :post%></li>
-</ul>
+<div>
+  <ul>
+    <li><%= link "Logout", to: Routes.login_path(@conn, :logout), method: :post %></li>
+    <li><%= link "Delete account", to: Routes.login_path(@conn, :delete), method: :post%></li>
+  </ul>
+</div>
+
 

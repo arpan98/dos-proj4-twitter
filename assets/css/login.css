@@ -3,8 +3,13 @@
 	margin-right: 10px;
 }
 
+.half-div {
+	float: left;
+	width: 50%;
+}
+
 .tweet-list {
 	overflow: hidden;
 	overflow-y: scroll;
-	max-height: 200px;
+	height: 300px;
 }

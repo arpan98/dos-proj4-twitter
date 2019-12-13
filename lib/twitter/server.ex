@@ -67,7 +67,7 @@ defmodule Twitter.Server do
   end
 
   def handle_cast({:retweet_post, userId, ownerId, tweet}, state) do
-    ServerFunctions.retweet(userId, ownerId, tweet)
+    ServerFunctions.retweet(userId, ownerId, tweet, false)
     {:noreply, state}
   end
 

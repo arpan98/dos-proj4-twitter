@@ -38,7 +38,7 @@ defmodule ServerFunctions do
     time = System.monotonic_time()
     # IO.puts("User #{userId} tweeted '#{tweet}'")
     :ets.insert(:tweets, {userId, tweet, time})
-    TwitterWeb.Endpoint.broadcast_from(self(), "tweets", "newtweet", %{"username" => userId, "tweet" => tweet})
+    TwitterWeb.Endpoint.broadcast_from(self(), "tweets", "gottweet", %{"username" => userId, "tweet" => tweet})
 
     case live do
       true -> 
@@ -74,6 +74,7 @@ defmodule ServerFunctions do
     time = System.monotonic_time()
     # IO.puts("User #{userId} retweeted Owner #{ownerId} - '#{tweet}'")
     :ets.insert(:retweets, {userId, ownerId, tweet, time})
+    TwitterWeb.Endpoint.broadcast_from(self(), "tweets", "gotretweet", %{"owner" => ownerId, "username" => userId, "tweet" => tweet})
     case live do
       true -> retweet_to_subscribers(userId, ownerId, tweet)
       false -> :nothing
