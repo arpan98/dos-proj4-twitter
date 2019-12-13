@@ -18,8 +18,6 @@ defmodule Twitter.Server do
 
   # Register user
   def handle_call({:register_user, userId}, _from, state) do
-    IO.puts("******************register_user*******************")
-    IO.inspect(userId)
     ret = ServerFunctions.register_user(userId)
     {:reply, ret, state}
   end

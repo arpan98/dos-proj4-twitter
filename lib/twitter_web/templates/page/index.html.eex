@@ -1,11 +1,5 @@
-<%# <div class="container align-middle mt-50"> %>
-    <%# <input id="userName" type="text" placeholder="enter your username" class="form-control" style="display:inline"></input> %>
-<%# <div> %>
-
 <div class="container pt-5 my-3 bg-light">
-    <%# <div class="form-inline form-control"> %>
-        <input id="userName" type="text" placeholder="enter your username" class="form-control" style="display:inline"></input>
-    <%# </div> %>
+    <input id="userName" type="text" placeholder="enter your username" class="form-control" style="display:inline"></input>
     <input id="subscriberName" type="text" placeholder="enter user to subscribe"  class="form-control"></input>
     <input id="tweet" type="text" placeholder="tweet it" class="form-control"></input>
     <%# <input id="search-hashtag" type="text" placeholder="search hashtag"  class="form-control"></input> %>

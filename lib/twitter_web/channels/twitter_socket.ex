@@ -21,8 +21,6 @@ defmodule TwitterWeb.TwitterSocket do
 
  def handle_in("tweet_post", payload, socket) do
   user_list = GenServer.call(TwitterServer, {:tweet_post, payload["userName"], payload["tweetMsg"]})
-  IO.puts("******************subscribed_user_list*******************")
-  IO.inspect(user_list)
   broadcast socket, "subscribed_tweets", %{userList: user_list,tweetMsg: payload["tweetMsg"], subscribedUser: payload["userName"] }
   {:noreply, socket}
   end
