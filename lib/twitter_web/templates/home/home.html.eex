@@ -1,25 +1,53 @@
+
 <script type="text/javascript">
   window.username = "<%= assigns[:username] %>";
 </script>
 
-<h1><%= assigns[:username] %>'s Homepage</h1>
-
-<input type="text" id="tweetInput"></input>
-<button id="tweetButton">Tweet</button>
-
-<ul id="tweetList" class="tweet-list">
-</ul>
-
-<div>
-  <input type="text" id="subToInput"></input>
-  <button id="subButton">Subscribe</button>
+<div class="container-fluid pt-5">
+  <div class="row d-flex justify-content-center">
+    <div class="col-sm">
+      <h3 class="text-uppercase text-info font-italic"><%= assigns[:username] %>'s homePage</h3>
+    </div>
+    <div class="col-sm"></div>
+    <div class="col-sm">
+      <span class="btn btn-outline-info text-info" style="border-radius: 4rem;">
+        <%= link "Logout", to: Routes.login_path(@conn, :logout), method: :post %>
+      </span>
+      <span class="btn btn-outline-info text-info" style="border-radius: 4rem;">
+        <%= link "Delete account", to: Routes.login_path(@conn, :delete), method: :post%>
+      </span>
+    </div>
+  </div>
 </div>
 
-<div>
-  <ul>
-    <li><%= link "Logout", to: Routes.login_path(@conn, :logout), method: :post %></li>
-    <li><%= link "Delete account", to: Routes.login_path(@conn, :delete), method: :post%></li>
-  </ul>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm nopadding">
+      <div class="input-group">
+        <input type="text" id="subToInput" class="form-control" style="border-top-left-radius: 4rem; border-bottom-left-radius: 4rem;">
+        <span class="input-group-btn">
+          <button id="subButton" class="btn btn-outline-info" style="border-top-right-radius: 4rem; border-bottom-right-radius: 4rem;">Subscribe</button>
+        </span>
+      </div>
+    </div>
+    <div class="col-sm nopadding">
+      <div class="input-group">
+        <input type="text" id="hashTweetTxt" class="form-control" style="border-top-left-radius: 4rem; border-bottom-left-radius: 4rem;">
+        <span class="input-group-btn">
+          <button id="hashTweetBtn" class="btn btn-outline-info" style="border-top-right-radius: 4rem; border-bottom-right-radius: 4rem;">Search #Tweet</button>
+        </span>
+      </div>
+    </div>
+  </div>
 </div>
 
+<div class="container-fluid">
+  <div class="input-group">
+    <input type="text" id="tweetInput" class="form-control" style="border-top-left-radius: 4rem; border-bottom-left-radius: 4rem;">
+    <span class="input-group-btn">
+      <button id="tweetButton" class="btn btn-outline-info" style="border-top-right-radius: 4rem; border-bottom-right-radius: 4rem;">Tweet it</button>
+    </span>
+  </div>
+</div>
 
+<div id="tweetList" class="tweet-list pl-5 pt-5"></div>

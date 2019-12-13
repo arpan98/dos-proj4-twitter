@@ -1,57 +1,108 @@
-// NOTE: The contents of this file will only be executed if
-// you uncomment its entry in "assets/js/app.js".
-
-// To use Phoenix channels, the first step is to import Socket,
-// and connect at the socket path in "lib/web/endpoint.ex".
-//
-// Pass the token on params as below. Or remove it
-// from the params if you are not using authentication.
 import {Socket} from "phoenix"
 
 let tweetSocket = new Socket("/socket", {params: {username: window.username}})
 
-// Finally, connect to the socket:
 tweetSocket.connect()
 
-// Now that you are connected, you can join channels with a topic:
 let channel = tweetSocket.channel("tweets", {})
 
 if(window.username) {
-  let tweetList = document.querySelector("#tweetList")
-  let tweetInput = document.querySelector("#tweetInput")
-  let subToInput = document.querySelector("#subToInput")
-  let subButton = document.querySelector("#subButton")
+  let tweetList = document.getElementById("tweetList")
+  let tweetInput = document.getElementById("tweetInput")
+  let tweetButton = document.getElementById("tweetButton")
+  let subToInput = document.getElementById("subToInput")
+  let subButton = document.getElementById("subButton")
+  let hashTweetTxt = document.getElementById("hashTweetTxt")
+  let hashTweetBtn = document.getElementById("hashTweetBtn")
 
   function addTweet(payload, retweet=false, selftweet = false) {
     console.log([retweet, selftweet])
-    var li = document.createElement('li')
-    var p = document.createElement('p')
-    p.innerHTML = "<b>" + payload.username + "</b>"
+    // var li = document.createElement('div')
+    // var p = document.createElement('p')
+    // p.innerHTML = "<b>" + payload.username + "</b>"
+    // if(retweet) {
+    //   p.innerHTML += "<i> retweeted " + payload.owner + "</i>"
+    // }
+    // p.innerHTML += "<br/>" + payload.tweet
+    // li.appendChild(p)
+    // if(!selftweet) {
+    //   var rtbutton = document.createElement('input')
+    //   rtbutton.type = "submit"
+    //   rtbutton.value = "Retweet"
+    //   rtbutton.onclick = function() {
+    //     channel.push("retweet", {owner: payload.username, tweet: payload.tweet})
+    //   }
+    //   li.appendChild(rtbutton)
+    // }
+    
+    // tweetList.insertBefore(li, tweetList.firstChild)
+
+    let div = document.createElement("div");
+    let span1 = document.createElement("span");
+    let span3 = document.createElement("span");
+    let span2 = document.createElement("span");
+    let button = document.createElement("button");
+    let messageContainer = document.getElementById("tweetList")
+  
+    span1.innerText = `${payload.username} tweets`
+    div.appendChild(span1)
     if(retweet) {
-      p.innerHTML += "<i> retweeted " + payload.owner + "</i>"
+      span3.innerHTML += `retweeted ${payload.owner }`
+      div.appendChild(span3)
     }
-    p.innerHTML += "<br/>" + payload.tweet
-    li.appendChild(p)
+    span2.innerHTML += payload.tweet
+    
+    div.appendChild(span2)
+
     if(!selftweet) {
-      var rtbutton = document.createElement('input')
-      rtbutton.type = "submit"
-      rtbutton.value = "Retweet"
-      rtbutton.onclick = function() {
+      button.innerText = "RETWEET"
+      button.type = "submit"
+      button.onclick = function() {
         channel.push("retweet", {owner: payload.username, tweet: payload.tweet})
       }
-      li.appendChild(rtbutton)
+      div.appendChild(button)
     }
-    tweetList.insertBefore(li, tweetList.firstChild)
+
+    div.setAttribute("class", "row text-dark d-flex align-items-center")
+    span1.setAttribute("class", "badge badge-dark badge-pill")
+    span2.setAttribute("class", "badge badge-success badge-pill ml-4")
+    span3.setAttribute("class", "badge badge-warning badge-pill ml-4")
+    button.setAttribute("class", "btn btn-outline-info badge-pill ml-4  w-25 h-25")
+
+    messageContainer.appendChild(div)
   }
 
+  tweetInput.addEventListener("keypress", event => {
+    if(event.keyCode === 13) {
+      channel.push("tweet", {tweet: tweetInput.value})
+      tweetInput.value = ""
+    }
+  })
   tweetButton.addEventListener("click", event => {
     channel.push("tweet", {tweet: tweetInput.value})
     tweetInput.value = ""
   })
 
+  subToInput.addEventListener("keypress", event => {
+    if(event.keyCode === 13) {
+      channel.push("subTo", {otheruser: subToInput.value})
+      subToInput.value = ""
+    }
+  })
   subButton.addEventListener("click", event => {
     channel.push("subTo", {otheruser: subToInput.value})
     subToInput.value = ""
+  })
+
+  hashTweetTxt.addEventListener("keypress", event => {
+    if(event.keyCode === 13) {
+      channel.push("get_hash_tweets", {hashTweets: hashTweetTxt.value})
+      hashTweetTxt.value = ""
+    }
+  })
+  hashTweetBtn.addEventListener("click", event => {
+    channel.push("get_hash_tweets", {hashTweets: hashTweetTxt.value})
+    hashTweetTxt.value = ""
   })
 
   channel.on("gottweet", payload => {

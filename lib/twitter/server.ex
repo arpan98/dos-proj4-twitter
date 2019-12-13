@@ -73,6 +73,9 @@ defmodule Twitter.Server do
 
   def handle_call({:get_hashtag_tweets, hashtag}, _from, state) do
     ret = ServerFunctions.get_hashtag_tweets(hashtag)
+    ret |> Enum.each(fn {userId, tweet, _} ->
+      TwitterWeb.Endpoint.broadcast_from(self(), "tweets", "gottweet", %{"username" => userId, "tweet" => tweet})
+    end)
     {:reply, ret, state}
   end
 

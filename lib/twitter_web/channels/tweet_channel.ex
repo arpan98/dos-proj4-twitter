@@ -23,9 +23,16 @@ defmodule TwitterWeb.TweetChannel do
     {:noreply, socket}
   end
 
+  def handle_in("get_hash_tweets", payload, socket) do
+    hash_tweets = GenServer.call(TwitterServer, {:get_hashtag_tweets, payload["hashTweets"]})
+    IO.inspect(hash_tweets)
+    IO.puts("********************")
+    {:noreply, socket}
+  end
+
   def handle_out("gottweet", payload, socket) do
     case {Enum.member?(socket.assigns.subbedTo, payload["username"]), socket.assigns.username == payload["username"]} do
-      {true, false} -> 
+      {true, false} ->
         push(socket, "gottweet", payload)
         IO.inspect(payload)
         {:noreply, socket}
@@ -42,4 +49,10 @@ defmodule TwitterWeb.TweetChannel do
     IO.inspect(payload)
     {:noreply, socket}
   end
+
+  # def handle_out("gotHashTweets", payload, socket) do
+  #   # push(socket, "selftweet", payload)
+  #   IO.inspect(payload)
+  #   {:noreply, socket}
+  # end
 end
