@@ -38,25 +38,25 @@ function connectClient() {
     })
 }
 
-function showPost(userName, msg, retweet) {
+function showPost(userName, msg) {
   let div = document.createElement("div");
   let span1 = document.createElement("span");
-  let span3 = document.createElement("span");
+  let span2 = document.createElement("span");
   let button = document.createElement("button");
 
   span1.innerText = `${new Date().toLocaleString()}`
-  span3.innerText = `${userName} tweets ${msg}`
+  span2.innerText = msg
   button.innerText = "RETWEET"
 
   div.setAttribute("class", "text-dark d-flex justify-content-between align-items-center")
   span1.setAttribute("class", "badge badge-dark badge-pill mr-3")
-  span3.setAttribute("class", "font-italic")
+  span2.setAttribute("class", "font-italic")
   button.setAttribute("class", "btn btn-outline-info badge-pill")
   // messageButton.addEventListener('click', ()=>{
       // channel.push("retweet", {username: username.value, tweetText: payload.tweetText})
   // })
   div.appendChild(span1)
-  div.appendChild(span3)
+  div.appendChild(span2)
   div.appendChild(button)
   messageContainer.appendChild(div)
 }
@@ -64,7 +64,7 @@ function showPost(userName, msg, retweet) {
 function registerUser(){
   let userName = document.getElementById('userName').value
   channel.push("register_user", {userName: userName})
-  showPost(userName, "logged in.", false)
+  showPost(userName, `${userName} logged in.`)
 }
 
 function subscribeUser() {
@@ -72,20 +72,21 @@ function subscribeUser() {
   let subscriberName = document.getElementById('subscriberName').value
   channel.push("subscribe_user", {userName: userName, subscriberName: subscriberName})
   document.getElementById('subscriberName').value = ""
+  showPost(userName, `${userName} subscribed to ${subscriberName}.`)
 }
 
 function tweetMsg() {
   let userName = document.getElementById('userName').value
   let tweetMsg = document.getElementById('tweet').value
   channel.push("tweet_post", {userName: userName, tweetMsg: tweetMsg, userList: []})
-  showPost(userName, tweetMsg, false)
+  showPost(userName, `${userName} tweets :: ${tweetMsg}.`)
   document.getElementById('tweet').value = ""
 }
 
 function postSubscribedTweets(payload) {
   console.log(`${payload.userList}`)
   if( payload.userList.indexOf( document.getElementById('userName').value ) > -1 ) {
-    showPost(payload.subscribedUser, payload.tweetMsg, true)
+    showPost(payload.subscribedUser, `${payload.subscribedUser} tweets ${payload.tweetMsg}.`)
   }
 }
 
