@@ -2,7 +2,7 @@ defmodule TwitterWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "login", TwitterWeb.LoginChannel
+  channel "tweets", TwitterWeb.TweetChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -15,8 +15,19 @@ defmodule TwitterWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket, _connect_info) do
-    {:ok, socket}
+  def connect(%{"username" => username}, socket, _connect_info) do
+    case username do
+      "undefined" -> 
+        IO.inspect("Username not set. Cannot join socket")
+        {:ok, socket}
+      _ -> 
+        IO.inspect("Username set")
+        subbedTo = GenServer.call(TwitterServer, {:get_subscribed_to, username})
+        socket = socket
+          |> assign(:username, username)
+          |> assign(:subbedTo, subbedTo)
+        {:ok, socket}
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

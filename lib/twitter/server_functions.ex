@@ -38,6 +38,7 @@ defmodule ServerFunctions do
     time = System.monotonic_time()
     # IO.puts("User #{userId} tweeted '#{tweet}'")
     :ets.insert(:tweets, {userId, tweet, time})
+    TwitterWeb.Endpoint.broadcast_from(self(), "tweets", "newtweet", %{"username" => userId, "tweet" => tweet})
 
     case live do
       true -> 
@@ -58,6 +59,10 @@ defmodule ServerFunctions do
       :ets.insert(:subscribers, {otherId, userId})
       :ets.insert(:subscribed_to, {userId, otherId})
     end
+  end
+
+  def get_subscribed_to(userId) do
+    :ets.lookup(:subscribed_to, userId) |> Enum.map(fn {_, otherId} -> otherId end)
   end
 
   def get_subscribed_tweets(userId) do

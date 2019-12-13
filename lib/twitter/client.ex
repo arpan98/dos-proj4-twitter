@@ -120,7 +120,7 @@ defmodule Twitter.Client do
   end
 
   defp getRandomInterval() do
-    (:rand.uniform(10) * 500) + 5000
+    (:rand.uniform(10) * 200) + 9000
   end
 
   defp probability_roll(p) do
