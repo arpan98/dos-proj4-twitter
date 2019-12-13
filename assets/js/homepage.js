@@ -44,7 +44,7 @@ if(window.username) {
     let button = document.createElement("button");
     let messageContainer = document.getElementById("tweetList")
   
-    span1.innerText = `${payload.username} tweets`
+    span1.innerText = `${payload.username}`
     div.appendChild(span1)
     if(retweet) {
       span3.innerHTML += `retweeted ${payload.owner }`
@@ -63,13 +63,14 @@ if(window.username) {
       div.appendChild(button)
     }
 
-    div.setAttribute("class", "row text-dark d-flex align-items-center")
-    span1.setAttribute("class", "badge badge-dark badge-pill")
-    span2.setAttribute("class", "badge badge-success badge-pill ml-4")
-    span3.setAttribute("class", "badge badge-warning badge-pill ml-4")
-    button.setAttribute("class", "btn btn-outline-info badge-pill ml-4  w-25 h-25")
+    div.setAttribute("class", "text-dark d-flex align-items-center mt-2")
+    span1.setAttribute("class", "badge badge-dark badge-pill text-large")
+    span2.setAttribute("class", "badge badge-success badge-pill ml-4 text-large")
+    span3.setAttribute("class", "badge badge-warning badge-pill ml-4 text-large")
+    button.setAttribute("class", "btn btn-outline-info badge-pill ml-4  w-25 h-25 ")
 
-    messageContainer.appendChild(div)
+    // messageContainer.appendChild(div)
+    messageContainer.insertBefore(div, messageContainer.firstChild)
   }
 
   tweetInput.addEventListener("keypress", event => {
