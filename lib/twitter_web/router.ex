@@ -17,12 +17,6 @@ defmodule TwitterWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/login", LoginController, :index
-    post "/login/existing", LoginController, :existing
-    post "/login/new", LoginController, :new
-    post "/login/logout", LoginController, :logout
-    post "/login/delete", LoginController, :delete
-    get "/home", HomeController, :index
   end
 
   # Other scopes may use custom stacks.

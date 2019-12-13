@@ -6,24 +6,18 @@ defmodule Twitter.Application do
   use Application
 
   def start(_type, _args) do
-    # List all child processes to be supervised
     children = [
-      # Start the endpoint when the application starts
       TwitterWeb.Endpoint
-      # Starts a worker by calling: Twitter.Worker.start_link(arg)
-      # {Twitter.Worker, arg},
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Twitter.Supervisor]
 
     start_server()
 
-    num_users = 100
-    name_prefixes = ["arpan", "krutantak", "sanket", "rishab"]
-    simulated_users = start_clients(num_users, name_prefixes)
-    register_clients(simulated_users)
+    # num_users = 100
+    # name_prefixes = ["arpan", "krutantak", "sanket", "rishab"]
+    # simulated_users = start_clients(num_users, name_prefixes)
+    # register_clients(simulated_users)
 
     Supervisor.start_link(children, opts)
   end
@@ -40,7 +34,7 @@ defmodule Twitter.Application do
   end
 
   def register_clients(users) do
-    users |> Enum.map(fn {_, pid} -> 
+    users |> Enum.map(fn {_, pid} ->
       GenServer.cast(pid, :register)
     end)
   end

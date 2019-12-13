@@ -17,8 +17,10 @@ defmodule Twitter.Server do
   end
 
   # Register user
-  def handle_call({:register_user, userId, userPid}, _from, state) do
-    ret = ServerFunctions.register_user(userId, userPid)
+  def handle_call({:register_user, userId}, _from, state) do
+    IO.puts("******************register_user*******************")
+    IO.inspect(userId)
+    ret = ServerFunctions.register_user(userId)
     {:reply, ret, state}
   end
 
@@ -38,22 +40,25 @@ defmodule Twitter.Server do
     {:reply, ret, state}
   end
 
-  def handle_cast({:tweet_post, userId, tweet}, state) do
+  def handle_call({:tweet_post, userId, tweet}, _from, state) do
     start_time = System.monotonic_time()
-    ServerFunctions.tweet(userId, tweet)
+    # ServerFunctions.tweet(userId, tweet)
     end_time = System.monotonic_time()
     new_avg = ((state.average_tweet_time * state.num_tweets) + (end_time - start_time)) / (state.num_tweets + 1) |> floor()
     # if state.num_tweets + 1 == 1000*10 do
     #   diff = System.convert_time_unit(new_avg, :native, :microsecond)
     #   IO.puts("Average tweet time = #{diff} us #{System.monotonic_time()}")
     # end
+    user_list = ServerFunctions.get_subscribed_user(userId)
     new_state = %{state | average_tweet_time: new_avg, num_tweets: state.num_tweets + 1}
-    {:noreply, new_state}
+    {:reply, user_list, new_state}
   end
 
-  def handle_cast({:subscribe, userId, otherId}, state) do
-    ServerFunctions.subscribe(userId, otherId)
-    {:noreply, state}
+  def handle_call({:subscribe, userId, otherId}, _from, state) do
+    IO.inspect("*********************************")
+    IO.inspect(otherId)
+    msg = ServerFunctions.subscribe(userId, otherId)
+    {:reply, msg, state}
   end
 
   def handle_call({:get_subscribed_tweets, userId}, _from, state) do

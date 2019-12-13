@@ -1,8 +1,8 @@
 defmodule ServerFunctions do
-  def register_user(userId, userPid) do
+  def register_user(userId) do
     case :ets.lookup(:registered_users, userId) do
       [] ->
-        :ets.insert(:registered_users, {userId, userPid, true})
+        :ets.insert(:registered_users, {userId, true})
         {:ok, "success"}
       default ->
         {:error, "username already exists"}
@@ -16,7 +16,7 @@ defmodule ServerFunctions do
 
   def login(userId) do
     case :ets.lookup(:registered_users, userId) do
-      [user | _] -> 
+      [user | _] ->
         {_, userPid, _} = user
         :ets.insert(:registered_users, {userId, userPid, true})
         {:ok, "success"}
@@ -26,7 +26,7 @@ defmodule ServerFunctions do
 
   def logout(userId) do
     case :ets.lookup(:registered_users, userId) do
-      [user | _] -> 
+      [user | _] ->
         {_, userPid, _} = user
         :ets.insert(:registered_users, {userId, userPid, false})
         {:ok, "success"}
@@ -40,7 +40,7 @@ defmodule ServerFunctions do
     :ets.insert(:tweets, {userId, tweet, time})
 
     case live do
-      true -> 
+      true ->
         tweet_to_subscribers(userId, tweet)
         find_hashtags(tweet) |> insert_hashtags(userId, tweet)
         mentions = find_mentions(tweet)
@@ -55,9 +55,19 @@ defmodule ServerFunctions do
   def subscribe(userId, otherId) do
     if userId != otherId do
       # IO.inspect([userId, "subscribed to", otherId])
-      :ets.insert(:subscribers, {otherId, userId})
-      :ets.insert(:subscribed_to, {userId, otherId})
+
+      case :ets.lookup(:registered_users, otherId) do
+        [_user | _] ->
+          :ets.insert(:subscribers, {otherId, userId})
+          :ets.insert(:subscribed_to, {userId, otherId})
+          {:ok, "Successfully subscribed to #{otherId} user."}
+        [] -> {:error, "User not found! Please enter a valid username."}
+      end
     end
+  end
+
+  def get_subscribed_user(userId) do
+    :ets.lookup(:subscribers, userId) |> Enum.map(fn {_, otherId} -> otherId end)
   end
 
   def get_subscribed_tweets(userId) do
@@ -112,7 +122,7 @@ defmodule ServerFunctions do
       {_, otherPid, connected} = :ets.lookup(:registered_users, String.to_integer(idString)) |> Enum.at(0)
       case connected do
         true -> GenServer.cast(otherPid, {:receive_tweet, userId, tweet, :mention})
-        false -> :nothing  
+        false -> :nothing
       end
     end)
   end
@@ -132,7 +142,7 @@ defmodule ServerFunctions do
       {_, otherPid, connected} = :ets.lookup(:registered_users, otherId) |> Enum.at(0)
       case connected do
         true -> GenServer.cast(otherPid, {:receive_retweet, userId, ownerId, tweet})
-        false -> :nothing  
+        false -> :nothing
       end
     end)
   end

@@ -1,63 +1,97 @@
-// NOTE: The contents of this file will only be executed if
-// you uncomment its entry in "assets/js/app.js".
 
-// To use Phoenix channels, the first step is to import Socket,
-// and connect at the socket path in "lib/web/endpoint.ex".
-//
-// Pass the token on params as below. Or remove it
-// from the params if you are not using authentication.
 import {Socket} from "phoenix"
 
 let socket = new Socket("/socket", {params: {token: window.userToken}})
-
-// When you connect, you'll often need to authenticate the client.
-// For example, imagine you have an authentication plug, `MyAuth`,
-// which authenticates the session and assigns a `:current_user`.
-// If the current user exists you can assign the user's token in
-// the connection for use in the layout.
-//
-// In your "lib/web/router.ex":
-//
-//     pipeline :browser do
-//       ...
-//       plug MyAuth
-//       plug :put_user_token
-//     end
-//
-//     defp put_user_token(conn, _) do
-//       if current_user = conn.assigns[:current_user] do
-//         token = Phoenix.Token.sign(conn, "user socket", current_user.id)
-//         assign(conn, :user_token, token)
-//       else
-//         conn
-//       end
-//     end
-//
-// Now you need to pass this token to JavaScript. You can do so
-// inside a script tag in "lib/web/templates/layout/app.html.eex":
-//
-//     <script>window.userToken = "<%= assigns[:user_token] %>";</script>
-//
-// You will need to verify the user token in the "connect/3" function
-// in "lib/web/channels/user_socket.ex":
-//
-//     def connect(%{"token" => token}, socket, _connect_info) do
-//       # max_age: 1209600 is equivalent to two weeks in seconds
-//       case Phoenix.Token.verify(socket, "user socket", token, max_age: 1209600) do
-//         {:ok, user_id} ->
-//           {:ok, assign(socket, :user, user_id)}
-//         {:error, reason} ->
-//           :error
-//       end
-//     end
-//
-// Finally, connect to the socket:
 socket.connect()
 
-// Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("login:returning", {})
-channel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
-  .receive("error", resp => { console.log("Unable to join", resp) })
+let messageContainer = document.getElementById('messages')
+let channel = socket.channel("twitterSocket:*", {})
+connectClient()
+
+function connectClient() {
+  channel.join()
+    .receive("ok", resp => { console.log("Joinded successfully", resp) })
+    .receive("error", resp => { console.log("Unable to join", resp) })
+
+    document.getElementById('userName').addEventListener("keypress", event => {
+      if (event.keyCode === 13){
+        registerUser()
+      }
+    })
+
+    document.getElementById('subscriberName').addEventListener("keypress", event => {
+      if (event.keyCode === 13){
+          subscribeUser()
+      }
+    })
+
+    document.getElementById('tweet').addEventListener("keypress", event => {
+      if (event.keyCode === 13){
+        tweetMsg()
+      }
+    })
+
+    // document.getElementById('referesh-screen').addEventListener() = refereshScreen()
+
+    channel.on("subscribed_tweets", payload => {
+      postSubscribedTweets(payload)
+    })
+}
+
+function showPost(userName, msg, retweet) {
+  let div = document.createElement("div");
+  let span1 = document.createElement("span");
+  let span3 = document.createElement("span");
+  let button = document.createElement("button");
+
+  span1.innerText = `${new Date().toLocaleString()}`
+  span3.innerText = `${userName} tweets ${msg}`
+  button.innerText = "RETWEET"
+
+  div.setAttribute("class", "text-dark d-flex justify-content-between align-items-center")
+  span1.setAttribute("class", "badge badge-dark badge-pill mr-3")
+  span3.setAttribute("class", "font-italic")
+  button.setAttribute("class", "btn btn-outline-info badge-pill")
+  // messageButton.addEventListener('click', ()=>{
+      // channel.push("retweet", {username: username.value, tweetText: payload.tweetText})
+  // })
+  div.appendChild(span1)
+  div.appendChild(span3)
+  div.appendChild(button)
+  messageContainer.appendChild(div)
+}
+
+function registerUser(){
+  let userName = document.getElementById('userName').value
+  channel.push("register_user", {userName: userName})
+  showPost(userName, "logged in.", false)
+}
+
+function subscribeUser() {
+  let userName = document.getElementById('userName').value
+  let subscriberName = document.getElementById('subscriberName').value
+  channel.push("subscribe_user", {userName: userName, subscriberName: subscriberName})
+  document.getElementById('subscriberName').value = ""
+}
+
+function tweetMsg() {
+  let userName = document.getElementById('userName').value
+  let tweetMsg = document.getElementById('tweet').value
+  channel.push("tweet_post", {userName: userName, tweetMsg: tweetMsg, userList: []})
+  showPost(userName, tweetMsg, false)
+  document.getElementById('tweet').value = ""
+}
+
+function postSubscribedTweets(payload) {
+  console.log(`${payload.userList}`)
+  if( payload.userList.indexOf( document.getElementById('userName').value ) > -1 ) {
+    showPost(payload.subscribedUser, payload.tweetMsg, true)
+  }
+}
+
+function refereshScreen() {
+  document.getElementById('messages').innerText = ``
+}
 
 export default socket
+
